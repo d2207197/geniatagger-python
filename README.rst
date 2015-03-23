@@ -14,7 +14,8 @@ GPL version 3 or later. Please read ``LICNESE``.
 Install
 -------
 
-Run ``python setup.py install``
+Run ``pip install -e .``
+
 
 ----------
 How to use
@@ -22,7 +23,7 @@ How to use
 
 ::
 
-  import geniatagger
+  from geniatagger import Geniatagger
 
   tagger = GeniaTagger('.../path_to_geniatagger/geniatagger')
   print tagger.parse('This is a pen.')
