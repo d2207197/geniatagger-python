@@ -25,7 +25,7 @@ class GeniaTagger(object):
         result = tuple(tuple(line.split('\t'))for line in result)
         return result
 
-    def __init__(self, path_to_tagger):
+    def __init__(self, path_to_tagger, parameter=''):
         """
 
         Arguments:
@@ -33,7 +33,7 @@ class GeniaTagger(object):
         """
         self._path_to_tagger = path_to_tagger
         self._dir_to_tagger = os.path.dirname(path_to_tagger)
-        self._tagger = subprocess.Popen('./' + os.path.basename(path_to_tagger),
+        self._tagger = subprocess.Popen(['./' + os.path.basename(path_to_tagger), parameter],
                                         cwd=self._dir_to_tagger,
                                         stdin=subprocess.PIPE,
                                         stdout=subprocess.PIPE)
