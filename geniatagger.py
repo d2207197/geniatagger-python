@@ -5,7 +5,6 @@ import argparse
 import subprocess
 import os.path
 
-
 import fcntl
 
 
@@ -13,6 +12,7 @@ class GeniaTagger(object):
 
     """
     """
+
     @staticmethod
     def set_nonblock_read(output):
         fd = output.fileno()
@@ -22,7 +22,7 @@ class GeniaTagger(object):
     @staticmethod
     def convert_result(result):
         result = result.decode('utf-8').split('\n')[:-2]
-        result = tuple(tuple(line.split('\t'))for line in result)
+        result = tuple(tuple(line.split('\t')) for line in result)
         return result
 
     def __init__(self, path_to_tagger, arguments=[]):
@@ -80,16 +80,46 @@ class GeniaTaggerClient:
         self._sock.close()
 
 
+import socket
+
+import json
+
+END_SEQUENCE = b'--ENDEND--'
+
+
+class GeniaTaggerClient:
+
+    def __init__(self, port):
+        self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self._sock.connect(('localhost', port))
+
+    def parse(self, text):
+        text = text.strip()
+        self._sock.sendall((text + "\n").encode('utf-8'))
+
+        received = self._sock.recv(8192)
+
+        if not END_SEQUENCE in received:
+            raise Exception('no END_SEQUENCE in received data')
+
+        received = received.rsplit(END_SEQUENCE, 1)[0]
+        received = json.loads(received.decode('utf-8'))
+        return received
+
+    def __del__(self):
+        self._sock.close()
+
+
 def _main():
     parser = argparse.ArgumentParser(description="GeniaTagger python binding")
     parser.add_argument('input_text')
-    parser.add_argument('--tagger', help='Path to geniatagger', default='./geniatagger')
+    parser.add_argument('--tagger',
+                        help='Path to geniatagger',
+                        default='./geniatagger')
     options = parser.parse_args()
 
     tagger = GeniaTagger(options.tagger)
     print((tagger.parse(options.input_text)))
-
-    pass
 
 
 if __name__ == '__main__':

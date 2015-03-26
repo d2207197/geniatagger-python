@@ -1,0 +1,45 @@
+#!/usr/bin/env python3
+from __future__ import print_function
+from geniatagger import GeniaTaggerClient
+import socketserver
+import argparse
+import socket
+import sys
+import json
+
+
+def tagger_client(port, sents):
+    tagger = GeniaTaggerClient(port)
+    for sent in sents:
+        result = tagger.parse(sent)
+        print(*('\t'.join(row) for row in result), sep='\n', end='\n\n')
+
+
+import fileinput
+
+import shlex
+import os
+
+
+def argparser():
+    parser = argparse.ArgumentParser(
+        description=("GeniaTagger Server\n\n"
+                     "$ geniatagger-server ~/tools/geniatagger-3.0.1/geniatagger -- -nt"),
+        formatter_class=argparse.RawTextHelpFormatter,
+        usage='''usage: geniatagger-server [-h] [-p PORT] [-a ADDRESS]
+                          geniatagger [-- arguments ...]'''
+    )
+
+    parser.add_argument('-p', '--port', default=9595, type=int, help='port to connect (default: %(default)s)')
+    parser.add_argument('-a', '--address', default='localhost', type=str,
+                        help='address to connect (default: %(default)s)')
+    parser.add_argument('text_files', nargs='*', help='text file to parse')
+    return parser.parse_args()
+
+
+def main():
+    options = argparser()
+    tagger_client(options.port, fileinput.input(options.text_files))
+
+if __name__ == '__main__':
+    main()

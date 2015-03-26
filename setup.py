@@ -8,5 +8,6 @@ setup(
     description='Python library for GeniaTagger',
     author='OKAMURA Yasunobu',
     url='https://github.com/informationsea/geniatagger-python',
-    py_modules=['geniatagger']
+    py_modules=['geniatagger'],
+    scripts=['geniatagger-socket']
 )
