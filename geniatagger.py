@@ -25,7 +25,7 @@ class GeniaTagger(object):
         result = tuple(tuple(line.split('\t'))for line in result)
         return result
 
-    def __init__(self, path_to_tagger, parameter=''):
+    def __init__(self, path_to_tagger, arguments=[]):
         """
 
         Arguments:
@@ -33,7 +33,7 @@ class GeniaTagger(object):
         """
         self._path_to_tagger = path_to_tagger
         self._dir_to_tagger = os.path.dirname(path_to_tagger)
-        self._tagger = subprocess.Popen(['./' + os.path.basename(path_to_tagger), parameter],
+        self._tagger = subprocess.Popen(['./' + os.path.basename(path_to_tagger)] + arguments,
                                         cwd=self._dir_to_tagger,
                                         stdin=subprocess.PIPE,
                                         stdout=subprocess.PIPE)
@@ -60,6 +60,24 @@ class GeniaTagger(object):
                 break
 
         return GeniaTagger.convert_result(result)
+
+import socket
+
+
+class GeniaTaggerClient:
+
+    def __init__(self, port):
+        self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self._sock.connect(('localhost', port))
+
+    def parse(self, text):
+        text = text.strip()
+        self._sock.sendall((text + "\n").encode('utf-8'))
+        received = self._sock.recv(1024).decode("utf-8")
+        return received
+
+    def __del__(self):
+        self._sock.close()
 
 
 def _main():
