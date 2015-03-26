@@ -58,6 +58,7 @@ Server/Client mode
 
 .. code:: console
   
+  # shell
   $ geniatagger-server --help
   $ geniatagger-server ~/tools/geniatagger-3.0.1/geniatagger -- -nt
    * Running GeniaTagger with: /Users/joe/tools/geniatagger-3.0.1/geniatagger -nt
@@ -73,6 +74,7 @@ Server/Client mode
 
 .. code:: console
 
+  # shell
   $ geniatagger-client --help
   $ echo 'This is a pen.' | geniatagger-client
   $ geniatagger-client <<< 'This is a pen.'
