@@ -30,6 +30,7 @@ How to use
 ----------
 
 Local mode
+````````
 
 .. code:: python
 
@@ -55,15 +56,20 @@ Local mode
 
   
 Server/Client mode
+```````````
+
+- geniatagger-server command
 
 .. code:: console
   
-  # shell
+  $ # shell
   $ geniatagger-server --help
   $ geniatagger-server ~/tools/geniatagger-3.0.1/geniatagger -- -nt
    * Running GeniaTagger with: /Users/joe/tools/geniatagger-3.0.1/geniatagger -nt
    * Listening on: localhost:9595
    
+- GeniaTaggerClient python class
+
 .. code:: python
 
   # python3
@@ -72,9 +78,12 @@ Server/Client mode
   tagger = GeniaTaggerClient(9595)
   print(tagger.parse('This is a pen.'))
 
+
+- geniatagger-client command
+
 .. code:: console
 
-  # shell
+  $ # shell
   $ geniatagger-client --help
   $ echo 'This is a pen.' | geniatagger-client
   $ geniatagger-client <<< 'This is a pen.'
