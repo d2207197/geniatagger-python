@@ -54,7 +54,7 @@ Local mode
   #  (u'pen.', u'pen.', u'NN', u'I-NP', u'O'))
 
   
-Server mode
+Server/Client mode
 
 .. code:: console
   
@@ -70,5 +70,21 @@ Server mode
   
   tagger = GeniaTaggerClient(9595)
   print(tagger.parse('This is a pen.'))
+
+.. code:: console
+
+  $ geniatagger-client --help
+  $ echo 'This is a pen.' | geniatagger-client
+  $ geniatagger-client <<< 'This is a pen.'
+  $ geniatagger-client
+  This is a pen
+  Don't panic!
+  <CTRL-d>
+  This    This    DT      B-NP    O
+  is      be      VBZ     B-VP    O
+  ...
+  
+  $ geniatagger-client some_text_file.txt other_text_file.txt
+  
   
   
