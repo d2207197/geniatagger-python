@@ -17,7 +17,7 @@ GPL version 3 or later. Please read ``LICNESE``.
 Install
 -------
 
-Download/Clone and run ``pip install -e .``
+Download/Clone and run ``pip install -e path/to/geniatagger-python/folder``
 
 or
 
