@@ -8,10 +8,30 @@ import os.path
 import fcntl
 
 
-class GeniaTagger(object):
+def _convert_result_to_tuple(result):
+    result = result.decode('utf-8').split('\n')
+    result = tuple(tuple(line.split('\t')) for line in result)
+    return result
 
-    """
-    """
+
+def _parse_wrapper(tagger):
+    def __wrapper(self, text, raw=False):
+        text = text.strip()
+        if not text:
+            return b'' if raw else ''
+        if '\n' in text:
+            raise Exception('newline in input')
+
+        result = tagger(self, text)
+
+        if raw:
+            return result.strip()
+        else:
+            return _convert_result_to_tuple(result)
+    return __wrapper
+
+
+class GeniaTagger:
 
     @staticmethod
     def set_nonblock_read(output):
@@ -19,18 +39,7 @@ class GeniaTagger(object):
         fl = fcntl.fcntl(fd, fcntl.F_GETFL)
         fcntl.fcntl(fd, fcntl.F_SETFL, fl | os.O_NONBLOCK)
 
-    @staticmethod
-    def convert_result(result):
-        result = result.decode('utf-8').split('\n')[:-2]
-        result = tuple(tuple(line.split('\t')) for line in result)
-        return result
-
     def __init__(self, path_to_tagger, arguments=[]):
-        """
-
-        Arguments:
-        - `path_to_tagger`:
-        """
         self._path_to_tagger = path_to_tagger
         self._dir_to_tagger = os.path.dirname(path_to_tagger)
         self._tagger = subprocess.Popen(['./' + os.path.basename(path_to_tagger)] + arguments,
@@ -39,15 +48,8 @@ class GeniaTagger(object):
                                         stdout=subprocess.PIPE)
         GeniaTagger.set_nonblock_read(self._tagger.stdout)
 
+    @_parse_wrapper
     def parse(self, text):
-        """
-        Arguments:
-        - `self`:
-        - `text`:
-        """
-
-        if '\n' in text:
-            raise Exception('newline in input')
         self._tagger.stdin.write((text + '\n').encode('utf-8'))
         self._tagger.stdin.flush()
 
@@ -56,45 +58,24 @@ class GeniaTagger(object):
                 result = self._tagger.stdout.read()
             except:
                 continue
-            if result:
+            if result and result[-2:] == b'\n\n':
                 break
-
-        return GeniaTagger.convert_result(result)
-
-import socket
-
-
-class GeniaTaggerClient:
-
-    def __init__(self, port=9595):
-        self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self._sock.connect(('localhost', port))
-
-    def parse(self, text):
-        text = text.strip()
-        self._sock.sendall((text + "\n").encode('utf-8'))
-        received = self._sock.recv(1024).decode("utf-8")
-        return received
-
-    def __del__(self):
-        self._sock.close()
+        return result.strip()
 
 
 import socket
 
-import json
-
-END_SEQUENCE = b'--ENDEND--'
+END_SEQUENCE = b'\nEND\n'
 
 
 class GeniaTaggerClient:
 
-    def __init__(self, port):
+    def __init__(self, address='localhost',  port=9595):
         self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self._sock.connect(('localhost', port))
+        self._sock.connect((address, port))
 
+    @_parse_wrapper
     def parse(self, text):
-        text = text.strip()
         self._sock.sendall((text + "\n").encode('utf-8'))
 
         received = self._sock.recv(8192)
@@ -103,24 +84,7 @@ class GeniaTaggerClient:
             raise Exception('no END_SEQUENCE in received data')
 
         received = received.rsplit(END_SEQUENCE, 1)[0]
-        received = json.loads(received.decode('utf-8'))
         return received
 
     def __del__(self):
         self._sock.close()
-
-
-def _main():
-    parser = argparse.ArgumentParser(description="GeniaTagger python binding")
-    parser.add_argument('input_text')
-    parser.add_argument('--tagger',
-                        help='Path to geniatagger',
-                        default='./geniatagger')
-    options = parser.parse_args()
-
-    tagger = GeniaTagger(options.tagger)
-    print((tagger.parse(options.input_text)))
-
-
-if __name__ == '__main__':
-    _main()

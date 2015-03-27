@@ -4,6 +4,18 @@ geniatagger-python
 
 Python Wrapper for `GeniaTagger`_ (part-of-speech tagging, shallow parsing, and named entity recognition for biomedical text)
 
+Originally created by `OKAMURA Yasunobu`_
+
+.. _OKAMURA Yasunobu: https://github.com/informationsea/geniatagger-python
+
+--------
+Features
+--------
+
+- Python interface for calling GeniaTagger_
+- Convert tab separated text to python tuples.
+- Server/Client mode for saving initializing time.
+
 
 .. _GeniaTagger: http://www.nactem.ac.uk/GENIA/tagger/
 
@@ -17,11 +29,11 @@ GPL version 3 or later. Please read ``LICNESE``.
 Install
 -------
 
-Download/Clone and run ``pip install -e path/to/geniatagger-python/folder``
+Clone the repository and run ``pip install -e path/to/geniatagger-python/folder``
 
 or
 
-Run ``pip install https://github.com/d2207197/geniatagger-python/archive/master.zip``
+Install directly from github ``pip install https://github.com/d2207197/geniatagger-python/archive/master.zip``
 
 
 
@@ -30,7 +42,7 @@ How to use
 ----------
 
 Local mode
-````````
+``````````
 
 .. code:: python
 
@@ -56,7 +68,7 @@ Local mode
 
   
 Server/Client mode
-```````````
+```````````````````
 
 - geniatagger-server command
 
@@ -96,6 +108,4 @@ Server/Client mode
   ...
   
   $ geniatagger-client some_text_file.txt other_text_file.txt
-  
-  
   

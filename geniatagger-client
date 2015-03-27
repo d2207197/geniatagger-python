@@ -1,24 +1,18 @@
 #!/usr/bin/env python3
 from __future__ import print_function
 from geniatagger import GeniaTaggerClient
-import socketserver
 import argparse
-import socket
 import sys
-import json
 
 
-def tagger_client(port, sents):
-    tagger = GeniaTaggerClient(port)
+def tagger_client(address, port, sents):
+    tagger = GeniaTaggerClient(address, port)
     for sent in sents:
-        result = tagger.parse(sent)
-        print(*('\t'.join(row) for row in result), sep='\n', end='\n\n')
-
+        result = tagger.parse(sent, raw=True)
+        sys.stdout.buffer.write(result + b'\n\n')
+        sys.stdout.buffer.flush()
 
 import fileinput
-
-import shlex
-import os
 
 
 def argparser():
@@ -39,7 +33,7 @@ def argparser():
 
 def main():
     options = argparser()
-    tagger_client(options.port, fileinput.input(options.text_files))
+    tagger_client(options.address, options.port, fileinput.input(options.text_files))
 
 if __name__ == '__main__':
     main()

@@ -4,10 +4,10 @@ from setuptools import setup
 
 setup(
     name='geniatagger-python',
-    version='0.1',
-    description='Python library for GeniaTagger',
-    author='OKAMURA Yasunobu',
-    url='https://github.com/informationsea/geniatagger-python',
+    version='0.2',
+    description='Python wrapper for GeniaTagger',
+    author='Yen, Tzu-Hsi',
+    url='https://github.com/d2207197/geniatagger-python',
     py_modules=['geniatagger'],
     scripts=['geniatagger-server', 'geniatagger-client']
 )
