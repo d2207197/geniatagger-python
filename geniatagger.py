@@ -66,7 +66,7 @@ import socket
 
 class GeniaTaggerClient:
 
-    def __init__(self, port):
+    def __init__(self, port=9595):
         self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._sock.connect(('localhost', port))
 
