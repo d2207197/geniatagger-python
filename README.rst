@@ -15,11 +15,16 @@ Features
 - Python interface for calling GeniaTagger_
 - Convert tab separated text to python tuples.
 - Server/Client mode for saving initializing time.
+
+.. _GeniaTagger: http://www.nactem.ac.uk/GENIA/tagger/
+
+--------------------------
+Compatibility/Requirements
+--------------------------
+
 - GeniaTagger/GeniaTaggerClient class is Py2/3 compatible
 - geniatagger-server/client command require Py3 installed
 
-
-.. _GeniaTagger: http://www.nactem.ac.uk/GENIA/tagger/
 
 -------
 License
