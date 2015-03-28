@@ -94,7 +94,7 @@ Server/Client mode
   # python3
   from geniatagger import GeniaTaggerClient
   
-  tagger = GeniaTaggerClient(9595)
+  tagger = GeniaTaggerClient(address='localhost', port=9595)
   print(tagger.parse('This is a pen.'))
 
 
