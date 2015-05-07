@@ -6,9 +6,9 @@ import os.path
 import fcntl
 
 
-def _convert_result_to_tuple(result):
+def _convert_result_to_list(result):
     result = result.decode('utf-8').split('\n')
-    result = tuple(tuple(line.split('\t')) for line in result)
+    result = [tuple(line.split('\t')) for line in result]
     return result
 
 
@@ -25,7 +25,7 @@ def _parse_wrapper(tagger):
         if raw:
             return result.strip()
         else:
-            return _convert_result_to_tuple(result)
+            return _convert_result_to_list(result)
     return __wrapper
 
 
@@ -71,7 +71,7 @@ class GeniaTaggerClient:
     def __init__(self, address='localhost',  port=9595):
         self._address = address
         self._port = port
-        
+
     @_parse_wrapper
     def parse(self, text):
         self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -80,10 +80,9 @@ class GeniaTaggerClient:
         self._sock.sendall((text + "\n").encode('utf-8'))
 
         received = self._sock.recv(8192)
-        
+
         if not END_SEQUENCE in received:
             raise Exception('no END_SEQUENCE in received data')
-        
 
         received = received.rsplit(END_SEQUENCE, 1)[0]
         return received
