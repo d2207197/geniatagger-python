@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-from __future__ import print_function
+from __future__ import print_function, unicode_literals
+
 from geniatagger import GeniaTaggerClient
 import argparse
 import sys
@@ -8,32 +9,31 @@ import sys
 def tagger_client(address, port, sents):
     tagger = GeniaTaggerClient(address, port)
     for sent in sents:
-        result = tagger.parse(sent, raw=True)
-        sys.stdout.buffer.write(result + b'\n\n')
-        sys.stdout.buffer.flush()
+        result = tagger.parse(sent, raw=True).decode('utf8')
+        sys.stdout.write(result + '\n\n')
+        sys.stdout.flush()
 
 import fileinput
 
 
 def argparser():
     parser = argparse.ArgumentParser(
-        description=("GeniaTagger Server\n\n"
-                     "$ geniatagger-server ~/tools/geniatagger-3.0.1/geniatagger -- -nt"),
-        formatter_class=argparse.RawTextHelpFormatter,
-        usage='''usage: geniatagger-server [-h] [-p PORT] [-a ADDRESS]
-                          geniatagger [-- arguments ...]'''
+        description=("GeniaTagger Client\n\n"
+                     "$ geniatagger-client"),
+        formatter_class=argparse.RawTextHelpFormatter                          
     )
 
-    parser.add_argument('-p', '--port', default=9595, type=int, help='port to connect (default: %(default)s)')
+    parser.add_argument(
+        '-p', '--port', default=9595, type=int, help='port to connect (default: %(default)s)')
     parser.add_argument('-a', '--address', default='localhost', type=str,
                         help='address to connect (default: %(default)s)')
-    parser.add_argument('text_files', nargs='*', help='text file to parse')
+    parser.add_argument('text_file', nargs='*', help='text file to parse')
     return parser.parse_args()
 
 
 def main():
     options = argparser()
-    tagger_client(options.address, options.port, fileinput.input(options.text_files))
+    tagger_client(options.address, options.port, fileinput.input(options.text_file))
 
 if __name__ == '__main__':
     main()

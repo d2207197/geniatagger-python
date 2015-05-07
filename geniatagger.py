@@ -69,17 +69,21 @@ END_SEQUENCE = b'\nEND\n'
 class GeniaTaggerClient:
 
     def __init__(self, address='localhost',  port=9595):
-        self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self._sock.connect((address, port))
-
+        self._address = address
+        self._port = port
+        
     @_parse_wrapper
     def parse(self, text):
+        self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self._sock.connect((self._address, self._port))
+
         self._sock.sendall((text + "\n").encode('utf-8'))
 
         received = self._sock.recv(8192)
-
+        
         if not END_SEQUENCE in received:
             raise Exception('no END_SEQUENCE in received data')
+        
 
         received = received.rsplit(END_SEQUENCE, 1)[0]
         return received

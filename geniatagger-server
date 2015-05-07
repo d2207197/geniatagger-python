@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
-from __future__ import print_function
+from __future__ import print_function, unicode_literals
+
+
 from geniatagger import GeniaTagger, END_SEQUENCE
-import socketserver
+
+from six.moves import socketserver
+
+
 import argparse
 import socket
 import sys
@@ -11,19 +16,27 @@ import json
 class TaggerTCPHandler(socketserver.StreamRequestHandler):
 
     def handle(self):
-        for line in self.rfile:
-            line = line.strip()
-            if line:
-                sent = str(line, 'utf-8')
-                print(("\033[1;32m + \033[m"
-                       "\033[1;33m{}:{} sent -> \033[m {}").format(self.client_address[0], self.client_address[1], sent))
-                self.wfile.write(self.server.tagger.parse(sent, raw=True) + END_SEQUENCE)
-                self.wfile.flush()
+        # for line in self.rfile:
+        line = self.rfile.readline().strip()
+        if line:
+            print('get line')
+            sent = line.decode('utf-8')
+            print(("\033[1;32m + \033[m"
+                   "\033[1;33m{}:{} sent -> \033[m {}").format(
+                       self.client_address[0],
+                self.client_address[1], sent))
+            self.wfile.write(self.server.tagger.parse(sent, raw=True) + END_SEQUENCE)
+            self.wfile.flush()
+            print('flush')
+        else:
+            print('get else')
+            self.wfile.write(ERROR_SEQUENCE)
+            self.wfile.flush()
+            print('flush')
 
 
 import fileinput
-import shlex
-import os
+import os.path
 
 
 def argparser():
@@ -35,7 +48,8 @@ def argparser():
                           geniatagger [-- arguments ...]'''
     )
 
-    parser.add_argument('-p', '--port', default=9595, type=int, help='port to listen on (default: %(default)s)')
+    parser.add_argument(
+        '-p', '--port', default=9595, type=int, help='port to listen on (default: %(default)s)')
     parser.add_argument('-a', '--address', default='localhost', type=str,
                         help='address to listen on (default: %(default)s)')
     parser.add_argument(
@@ -46,7 +60,6 @@ def argparser():
 
 
 def main():
-
     options = argparser()
 
     tagger_path = os.path.expanduser(options.geniatagger)
@@ -58,7 +71,11 @@ def main():
 
     server = socketserver.TCPServer((options.address, options.port), TaggerTCPHandler)
     server.tagger = GeniaTagger(tagger_path, options.arguments)
-    server.serve_forever()
+    try:
+        server.serve_forever()
+    finally:
+        print('\033[32m *\033[m Shutting down...')
+        server.shutdown()
 
 
 if __name__ == '__main__':

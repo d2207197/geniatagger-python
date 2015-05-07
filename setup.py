@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name='geniatagger-python',
-    version='0.2',
+    version='0.3',
     description='Python wrapper for GeniaTagger',
     author='Yen, Tzu-Hsi',
     url='https://github.com/d2207197/geniatagger-python',
